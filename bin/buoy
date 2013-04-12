@@ -1,0 +1,70 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var fs = require('fs');
+var path = require('path');
+var exists = fs.existsSync || path.existsSync;
+var Mocha = require('mocha');
+var Reporter = require(__dirname + '/../lib/reporter');
+var Client = require(__dirname + '/../lib/client');
+var _ = require('underscore');
+
+program
+  .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
+  .usage('[options] [files]')
+  .option('-c, --ci-server <URL>', 'Alternative Buoy CI Server URL')
+program.name = 'buoy';
+program.parse(process.argv);
+
+var files = [];
+program.args.forEach(function(arg){
+  files = files.concat(lookupFiles(arg, program.recursive));
+});
+files = files.map(function(file){
+  return path.resolve(file);
+});
+
+var mocha;
+var options = {
+  globals: ['should'],
+  timeout: 3000,
+  ignoreLeaks: false,
+  ui: 'bdd'
+}
+
+var client = new Client({url: program['ci-server']});
+client.on('test', function(buildInfo) {
+  options.reporter = Reporter(client, buildInfo);
+  mocha = new Mocha(options);
+  files.forEach(function(file) {
+    delete require.cache[file]; // Need this in order to have require inside mocha work..
+    mocha.addFile(file);
+  });
+  mocha.run();
+});
+client.connect();
+
+/**
+ * Lookup file names at the given `path`.
+ */
+
+function lookupFiles(path, recursive) {
+  var files = [];
+
+  if (!exists(path)) path += '.js';
+  var stat = fs.statSync(path);
+  if (stat.isFile()) return path;
+
+  fs.readdirSync(path).forEach(function(file){
+    file = join(path, file);
+    var stat = fs.statSync(file);
+    if (stat.isDirectory()) {
+      if (recursive) files = files.concat(lookupFiles(file, recursive));
+      return
+    }
+    if (!stat.isFile() || !re.test(file) || basename(file)[0] == '.') return;
+    files.push(file);
+  });
+
+  return files;
+}

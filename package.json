@@ -12,7 +12,9 @@
     "faye-websocket": ">=0.4.3",
     "ejs": ">=0.7.0",
     "mocha": ">=1.8.2",
-    "express": ">=3.1.0"
+    "express": ">=3.1.0",
+    "commander": "0.6.1",
+    "request": "2.16.6"
   },
   "devDependencies": {
     "grunt": "~0.3.12",
