@@ -12,7 +12,7 @@ var _ = require('underscore');
 program
   .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
   .usage('[options] [files]')
-  .option('-c, --ci-server <URL>', 'Alternative Buoy CI Server URL')
+  .option('-c, --ci-server <URL>', 'Buoy CI Server URL')
 program.name = 'buoy';
 program.parse(process.argv);
 
@@ -32,7 +32,12 @@ var options = {
   ui: 'bdd'
 }
 
-var client = new Client({url: program['ci-server']});
+if(!program.ciServer) {
+  console.warn("Please specify the CI server URL using the --ci-server option (see --help)")
+  return process.exit();
+}
+
+var client = new Client({url: program.ciServer});
 client.on('test', function(buildInfo) {
   options.reporter = Reporter(client, buildInfo);
   mocha = new Mocha(options);
