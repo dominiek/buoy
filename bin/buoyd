@@ -5,20 +5,23 @@ var fs = require('fs');
 var Reporter = require(__dirname + '/../lib/reporter');
 var Server = require(__dirname + '/../lib/server');
 var IntervalBuilder = require(__dirname + '/../lib/interval-builder');
+var GitBuilder = require(__dirname + '/../lib/git-builder');
 var _ = require('underscore');
 
 program
   .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
   .usage('[options]')
-  .option('-p, --port <PORT>', 'Alternative HTTP port, defaults to 8888', parseInt)
+  .option('-p, --port <PORT>', 'Port to bind HTTP server to (Default: 8888)', parseInt)
+  .option('-g, --git-path <PATH>', 'Specify path to Git checkout to monitor for changes')
+  .option('-b, --git-branch <PATH>', 'What branch to monitor for changes? (Default: master')
   .option('-i, --interval <SECONDS>', 'Run tests periodically', parseInt)
 program.name = 'buoy';
 program.parse(process.argv);
 
 var builder = null;
 
-if(program.githubUrl) {
-
+if(program.gitPath) {
+  builder = new GitBuilder({path: program.gitPath, branch: program.gitBranch})
 } else {
   builder = new IntervalBuilder({interval: program.interval});
 }
