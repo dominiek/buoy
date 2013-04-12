@@ -20,11 +20,11 @@ program.parse(process.argv);
 
 var builder = null;
 
-if(program.gitPath) {
+//if(program.gitPath) {
   builder = new GitBuilder({path: program.gitPath, branch: program.gitBranch})
-} else {
-  builder = new IntervalBuilder({interval: program.interval});
-}
+//} else {
+//  builder = new IntervalBuilder({interval: program.interval});
+//}
 
 builder.start();
 
