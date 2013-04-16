@@ -27,7 +27,8 @@ var successReport = {
       "timedOut":false,
       "namespace":["MyParent"]
     }
-  ]
+  ],
+  "build":{"version":"V1","comment":"\nBump and grunt script\n","branch":"master","time":"2013-04-16T13:07:41.825Z","attempt":0}
 }
 
 var failureReport = {
@@ -49,7 +50,8 @@ var failureReport = {
       "timedOut":false,
       "namespace":["MyParent"]
     }
-  ]
+  ],
+  "build":{"version":"V2","comment":"\nBump and grunt script\n","branch":"master","time":"2013-04-16T13:07:41.825Z","attempt":0}
 }
 
 describe("Server", function() {
