@@ -2,12 +2,9 @@
 
 var program = require('commander');
 var fs = require('fs');
-var path = require('path');
-var exists = fs.existsSync || path.existsSync;
-var Mocha = require('mocha');
-var Reporter = require(__dirname + '/../lib/reporter');
-var Client = require(__dirname + '/../lib/client');
+var spawn = require('child_process').spawn;
 var _ = require('underscore');
+var Client = require(__dirname + '/../lib/client');
 
 program
   .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
@@ -16,22 +13,6 @@ program
 program.name = 'buoy';
 program.parse(process.argv);
 
-var files = [];
-program.args.forEach(function(arg){
-  files = files.concat(lookupFiles(arg, program.recursive));
-});
-files = files.map(function(file){
-  return path.resolve(file);
-});
-
-var mocha;
-var options = {
-  globals: ['should'],
-  timeout: 3000,
-  ignoreLeaks: false,
-  ui: 'bdd'
-}
-
 if(!program.ciServer) {
   console.warn("Please specify the CI server URL using the --ci-server option (see --help)")
   return process.exit();
@@ -39,42 +20,12 @@ if(!program.ciServer) {
 
 var client = new Client({url: program.ciServer});
 client.on('test', function(buildInfo) {
-  options.reporter = Reporter(client, buildInfo);
-  mocha = new Mocha(options);
-
-  for(var file in require.cache) {
-    delete require.cache[file];
-  }
-  
-  files.forEach(function(file) {
-    delete require.cache[file]; // Need this in order to have require inside mocha work..
-    mocha.addFile(file);
+  var args = [__dirname + '/_buoy', program.ciServer, JSON.stringify(buildInfo)].concat(program.args);
+  var proc = spawn(process.argv[0], args, { customFds: [0,1,2] });
+  proc.on('exit', function (code, signal) {
+    
   });
-  mocha.run();
 });
 client.connect();
 
-/**
- * Lookup file names at the given `path`.
- */
 
-function lookupFiles(path, recursive) {
-  var files = [];
-
-  if (!exists(path)) path += '.js';
-  var stat = fs.statSync(path);
-  if (stat.isFile()) return path;
-
-  fs.readdirSync(path).forEach(function(file){
-    file = join(path, file);
-    var stat = fs.statSync(file);
-    if (stat.isDirectory()) {
-      if (recursive) files = files.concat(lookupFiles(file, recursive));
-      return
-    }
-    if (!stat.isFile() || !re.test(file) || basename(file)[0] == '.') return;
-    files.push(file);
-  });
-
-  return files;
-}

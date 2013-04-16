@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var path = require('path');
+var exists = fs.existsSync || path.existsSync;
+var Mocha = require('mocha');
+var Reporter = require(__dirname + '/../lib/reporter');
+var Client = require(__dirname + '/../lib/client');
+var _ = require('underscore');
+
+var ciServer = process.argv[2];
+var buildInfo = JSON.parse(process.argv[3]);
+var files = [];
+
+process.argv.slice(4).forEach(function(arg){
+  files = files.concat(lookupFiles(arg, false));
+});
+files = files.map(function(file){
+  return path.resolve(file);
+});
+
+var client = new Client({url: ciServer});
+var options = {
+  globals: ['should'],
+  timeout: 3000,
+  ignoreLeaks: false,
+  ui: 'bdd'
+}
+options.reporter = Reporter(client, buildInfo);
+var mocha = new Mocha(options);
+files.forEach(function(file) {
+  delete require.cache[file]; // Need this in order to have require inside mocha work..
+  mocha.addFile(file);
+});
+mocha.run(function() {
+  process.exit(1);
+});
+
+/**
+ * Lookup file names at the given `path`.
+ */
+
+function lookupFiles(path, recursive) {
+  var files = [];
+
+  if (!exists(path)) path += '.js';
+  var stat = fs.statSync(path);
+  if (stat.isFile()) return path;
+
+  fs.readdirSync(path).forEach(function(file){
+    file = join(path, file);
+    var stat = fs.statSync(file);
+    if (stat.isDirectory()) {
+      if (recursive) files = files.concat(lookupFiles(file, recursive));
+      return
+    }
+    if (!stat.isFile() || !re.test(file) || basename(file)[0] == '.') return;
+    files.push(file);
+  });
+
+  return files;
+}
+
