@@ -33,7 +33,7 @@ files.forEach(function(file) {
   mocha.addFile(file);
 });
 mocha.run(function() {
-  process.exit(1);
+  //process.exit(1);
 });
 
 /**
