@@ -52,7 +52,7 @@ describe("Utils", function() {
 
   it("should generate error report", function() {
 
-    var errorSummary = utils.summarizeErrors(failureReport);
+    var errorSummary = utils.summarizeErrors(failureReport, {numLines: 2});
     assert(errorSummary.match(/AssertionError/i))
     assert(errorSummary.match(/MyParent/i))
     assert(errorSummary.match(/checkouts/i))
