@@ -15,6 +15,7 @@ program
   .option('-p, --port <PORT>', 'Port to bind HTTP server to (Default: 8888)', parseInt)
   .option('-g, --git-path <PATH>', 'Specify path to Git checkout to monitor for changes')
   .option('-b, --git-branch <PATH>', 'What branch to monitor for changes? (Default: master)')
+  .option('-ghu, --github-url <URL>', 'URL of your Github repository (for linking)')
   .option('-cs, --campfire-subdomain <USERNAME>', 'Subdomain/account for Campfire Notifier')
   .option('-ct, --campfire-token <TOKEN>', 'Token for Campfire Notifier')
   .option('-cr, --campfire-room <ROOM>', 'Room ID for Campfire Notifier')
@@ -25,7 +26,7 @@ program.parse(process.argv);
 var builder = null;
 
 //if(program.gitPath) {
-  builder = new GitBuilder({path: program.gitPath, branch: program.gitBranch})
+  builder = new GitBuilder({path: program.gitPath, branch: program.gitBranch, githubUrl: program.githubUrl})
 //} else {
 //  builder = new IntervalBuilder({interval: program.interval});
 //}
