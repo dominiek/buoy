@@ -1,19 +1,23 @@
 #!/usr/bin/env node
 
+var _ = require('underscore');
 var program = require('commander');
 var fs = require('fs');
 var Reporter = require(__dirname + '/../lib/reporter');
 var Server = require(__dirname + '/../lib/server');
-var IntervalBuilder = require(__dirname + '/../lib/interval-builder');
-var GitBuilder = require(__dirname + '/../lib/git-builder');
-var _ = require('underscore');
+var IntervalBuilder = require(__dirname + '/../lib/builders/interval');
+var GitBuilder = require(__dirname + '/../lib/builders/git');
+var CampfireNotifier = require(__dirname + '/../lib/notifiers/campfire');
 
 program
   .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
   .usage('[options]')
   .option('-p, --port <PORT>', 'Port to bind HTTP server to (Default: 8888)', parseInt)
   .option('-g, --git-path <PATH>', 'Specify path to Git checkout to monitor for changes')
-  .option('-b, --git-branch <PATH>', 'What branch to monitor for changes? (Default: master')
+  .option('-b, --git-branch <PATH>', 'What branch to monitor for changes? (Default: master)')
+  .option('-cs, --campfire-subdomain <USERNAME>', 'Subdomain/account for Campfire Notifier')
+  .option('-ct, --campfire-token <TOKEN>', 'Token for Campfire Notifier')
+  .option('-cr, --campfire-room <ROOM>', 'Room ID for Campfire Notifier')
   .option('-i, --interval <SECONDS>', 'Run tests periodically', parseInt)
 program.name = 'buoy';
 program.parse(process.argv);
@@ -26,10 +30,18 @@ var builder = null;
 //  builder = new IntervalBuilder({interval: program.interval});
 //}
 
+
 builder.start();
 
 var port = program.port || 8888;
 var server = new Server(builder);
+
+if(program.campfireSubdomain) {
+  var campfireNotifier = null;
+  campfireNotifier = new CampfireNotifier({subdomain: program.campfireSubdomain, token: program.campfireToken, room: program.campfireRoom});
+  campfireNotifier.enable(server);
+}
+
 var httpServer = require('http').createServer(server.app); 
 httpServer.listen(port);
 console.log("Buoy Server running on port " + port)
