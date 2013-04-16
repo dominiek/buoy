@@ -41,7 +41,7 @@ Options:
 
 ```
 
-## Running the Buoy Reporter (CLI)
+## Running the Buoy CLI Reporter
 
 You can use the `buoy` command to continuously run a list of Mocha tests. The Buoy Reporter will connect to the Buoy Server and wait for commands (new commits, manual rebuilds, etc.), once a new build command is received, the tests will run and results will be submitted back to the server.
 
@@ -65,7 +65,7 @@ Options:
 
 ```
 
-## Running the Buoy Reporter (Browser)
+## Running the Buoy Browser Reporter
 
 Coming Soon!
 
