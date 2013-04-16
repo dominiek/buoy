@@ -20,7 +20,7 @@ program
   .option('-ct, --campfire-token <TOKEN>', 'Token for Campfire Notifier')
   .option('-cr, --campfire-room <ROOM>', 'Room ID for Campfire Notifier')
   .option('-i, --interval <SECONDS>', 'Run tests periodically', parseInt)
-program.name = 'buoy';
+program.name = 'buoyd';
 program.parse(process.argv);
 
 var builder = null;
