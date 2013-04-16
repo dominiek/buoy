@@ -23,7 +23,6 @@ client.on('test', function(buildInfo) {
   var args = [__dirname + '/_buoy', program.ciServer, JSON.stringify(buildInfo)].concat(program.args);
   var proc = spawn(process.argv[0], args, { customFds: [0,1,2] });
   proc.on('exit', function (code, signal) {
-    console.log("Received exit signal")
   });
 });
 client.connect();
