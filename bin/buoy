@@ -41,6 +41,11 @@ var client = new Client({url: program.ciServer});
 client.on('test', function(buildInfo) {
   options.reporter = Reporter(client, buildInfo);
   mocha = new Mocha(options);
+
+  for(var file in require.cache) {
+    delete require.cache[file];
+  }
+  
   files.forEach(function(file) {
     delete require.cache[file]; // Need this in order to have require inside mocha work..
     mocha.addFile(file);
