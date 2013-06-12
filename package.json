@@ -1,6 +1,6 @@
 {
   "name": "BuoyJS",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "description": "Simple distributed Continuous Integration server that plays well with Mocha",
   "homepage": "http://buoyjs.com",
   "repository": {
@@ -25,7 +25,8 @@
     "ranger": "0.2.4"
   },
   "devDependencies": {
-    "grunt": "0.4.0",
+    "grunt": "*",
+    "grunt-cli": "*",
     "grunt-requirejs": "~0.2.9",
     "grunt-contrib": "~0.1.7",
     "grunt-bump": "*",
