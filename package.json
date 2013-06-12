@@ -1,6 +1,6 @@
 {
-  "name": "BuoyJS",
-  "version": "0.0.18",
+  "name": "buoy",
+  "version": "0.0.19",
   "description": "Simple distributed Continuous Integration server that plays well with Mocha",
   "homepage": "http://buoyjs.com",
   "repository": {
