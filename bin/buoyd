@@ -8,6 +8,7 @@ var Server = require(__dirname + '/../lib/server');
 var IntervalBuilder = require(__dirname + '/../lib/builders/interval');
 var GitBuilder = require(__dirname + '/../lib/builders/git');
 var CampfireNotifier = require(__dirname + '/../lib/notifiers/campfire');
+var IobridgeNotifier = require(__dirname + '/../lib/notifiers/iobridge');
 
 program
   .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
@@ -19,6 +20,9 @@ program
   .option('-cs, --campfire-subdomain <USERNAME>', 'Subdomain/account for Campfire Notifier')
   .option('-ct, --campfire-token <TOKEN>', 'Token for Campfire Notifier')
   .option('-cr, --campfire-room <ROOM>', 'Room ID for Campfire Notifier')
+  .option('-ir, --iobridge-relais <WIDGET_ID>', 'IOBridge Widget ID for Relais output (use , for multiple)')
+  .option('-is, --iobridge-sound <WIDGET_ID>', 'IOBridge Widget ID for Sound output')
+  .option('-il, --iobridge-lcd <WIDGET_ID>', 'IOBridge Widget ID for LCD output')
   .option('-i, --interval <SECONDS>', 'Run tests periodically', parseInt)
 program.name = 'buoyd';
 program.parse(process.argv);
@@ -41,6 +45,15 @@ if(program.campfireSubdomain) {
   var campfireNotifier = null;
   campfireNotifier = new CampfireNotifier({subdomain: program.campfireSubdomain, token: program.campfireToken, room: program.campfireRoom});
   campfireNotifier.enable(server);
+}
+
+if(program.iobridgeLcd || program.iobridgeRelais || program.iobridgeSound) {
+  var iobridgeNotifier = new IobridgeNotifier({
+    lcdId: program.iobridgeLcd,
+    relaisId: program.iobridgeRelais,
+    soundId: program.iobridgeSound
+  });
+  iobridgeNotifier.enable(server);
 }
 
 var httpServer = require('http').createServer(server.app); 
