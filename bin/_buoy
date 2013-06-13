@@ -41,7 +41,7 @@ try {
     title: "All", 
     passed: false, 
     error: {name: e.message, stack: e.stack},
-    namespace: '*'
+    namespace: ['*']
   };
   client.report([fatalError], function() {
     process.exit();
