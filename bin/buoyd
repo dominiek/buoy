@@ -22,6 +22,7 @@ program
   .option('-ct, --campfire-token <TOKEN>', 'Token for Campfire Notifier')
   .option('-cr, --campfire-room <ROOM>', 'Room ID for Campfire Notifier')
   .option('-ft, --flowdock-token <TOKEN>', 'Flow API Token for Flowdock Notifier')
+  .option('-fa, --flowdock-from-address <ADDRESS>', 'From email address for avatar in Flowdock Notifier')
   .option('-ir, --iobridge-relais <WIDGET_ID>', 'IOBridge Widget ID for Relais output (use , for multiple)')
   .option('-is, --iobridge-sound <WIDGET_ID>', 'IOBridge Widget ID for Sound output')
   .option('-il, --iobridge-lcd <WIDGET_ID>', 'IOBridge Widget ID for LCD output')
@@ -60,7 +61,10 @@ if(program.iobridgeLcd || program.iobridgeRelais || program.iobridgeSound) {
 
 if(program.flowdockToken) {
   var flowdockNotifier = null;
-  flowdockNotifier = new FlowdockNotifier({token: program.flowdockToken});
+  flowdockNotifier = new FlowdockNotifier({
+    token: program.flowdockToken,
+    fromAddress: program.flowdockFromAddress
+  });
   flowdockNotifier.enable(server);
 }
 
