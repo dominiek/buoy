@@ -9,6 +9,7 @@ var IntervalBuilder = require(__dirname + '/../lib/builders/interval');
 var GitBuilder = require(__dirname + '/../lib/builders/git');
 var CampfireNotifier = require(__dirname + '/../lib/notifiers/campfire');
 var IobridgeNotifier = require(__dirname + '/../lib/notifiers/iobridge');
+var FlowdockNotifier = require(__dirname + '/../lib/notifiers/flowdock');
 
 program
   .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
@@ -20,6 +21,7 @@ program
   .option('-cs, --campfire-subdomain <USERNAME>', 'Subdomain/account for Campfire Notifier')
   .option('-ct, --campfire-token <TOKEN>', 'Token for Campfire Notifier')
   .option('-cr, --campfire-room <ROOM>', 'Room ID for Campfire Notifier')
+  .option('-ft, --flowdock-token <TOKEN>', 'Flow API Token for Flowdock Notifier')
   .option('-ir, --iobridge-relais <WIDGET_ID>', 'IOBridge Widget ID for Relais output (use , for multiple)')
   .option('-is, --iobridge-sound <WIDGET_ID>', 'IOBridge Widget ID for Sound output')
   .option('-il, --iobridge-lcd <WIDGET_ID>', 'IOBridge Widget ID for LCD output')
@@ -54,6 +56,12 @@ if(program.iobridgeLcd || program.iobridgeRelais || program.iobridgeSound) {
     soundId: program.iobridgeSound
   });
   iobridgeNotifier.enable(server);
+}
+
+if(program.flowdockToken) {
+  var flowdockNotifier = null;
+  flowdockNotifier = new FlowdockNotifier({token: program.flowdockToken});
+  flowdockNotifier.enable(server);
 }
 
 var httpServer = require('http').createServer(server.app); 

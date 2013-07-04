@@ -32,11 +32,11 @@ files.forEach(function(file) {
   delete require.cache[file]; // Need this in order to have require inside mocha work..
   mocha.addFile(file);
 });
-try {
+//try {
   mocha.run(function() {
     //process.exit(1);
   });
-} catch(e) {
+/*} catch(e) {
   var fatalError = {
     title: "All", 
     passed: false, 
@@ -46,7 +46,7 @@ try {
   client.report([fatalError], function() {
     process.exit();
   });
-}
+}*/
 
 /**
  * Lookup file names at the given `path`.
